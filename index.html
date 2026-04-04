@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umzugsangebot Rechner</title>
+    <style>
+        :root {
+            --primary: #27ae60; /* Professionelles Grün */
+            --primary-dark: #219150;
+            --secondary: #4b5563;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #d1d5db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        /* Calculator Layout */
+        .calc-card {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 6px solid var(--primary);
+            margin-bottom: 40px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Result Section */
+        #result-display {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-label { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+        .result-value { font-size: 1.3rem; font-weight: 800; color: #2d3748; }
+        .total-value { font-size: 1.8rem; color: var(--primary); border-top: 2px solid var(--primary); padding-top: 5px; }
+
+        /* Tables */
+        .section-title {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+            margin: 40px 0 20px;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th { background: #f9fafb; padding: 12px 15px; text-align: left; border-bottom: 2px solid #edf2f7; color: var(--secondary); }
+        td { padding: 12px 15px; border-bottom: 1px solid #edf2f7; }
+        tr:last-child td { border-bottom: none; }
+        .highlight-col { background-color: #f0fff4; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="header">
+        <h1>Umzugsangebot Rechner</h1>
+        <p>Kombinierte Preisberechnung für Volumen & Distanz</p>
+    </div>
+
+    <div class="calc-card">
+        <div class="input-row">
+            <div>
+                <label for="volume">Volumen (m³)</label>
+                <input type="number" id="volume" placeholder="z.B. 25" step="0.1">
+            </div>
+            <div>
+                <label for="distance">Distanz (KM)</label>
+                <input type="number" id="distance" placeholder="z.B. 630">
+            </div>
+            <div>
+                <label for="volPrice">Preis pro m³ (CHF/€)</label>
+                <input type="number" id="volPrice" placeholder="z.B. 75" step="0.01">
+            </div>
+        </div>
+        
+        <button onclick="calculateQuote()">Endgültiges Angebot berechnen</button>
+
+        <div id="result-display">
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="result-label">Empfohlenes Fahrzeug</span>
+                    <span id="res-truck" class="result-value">--</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Frachtpreis</span>
+                    <span id="res-cargo-cost" class="result-value">--</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Transportpreis</span>
+                    <span id="res-dist-cost" class="result-value">--</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Gesamtbetrag</span>
+                    <span id="res-total" class="result-value total-value">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Referenz: Fahrzeugflotte</h2>
+    <div class="table-wrapper">
+        <table id="truck-table">
+            <thead><tr><th>Fahrzeug</th><th>Max. Kapazität</th><th>Nutzlast</th></tr></thead>
+            <tbody id="truck-body"></tbody>
+        </table>
+    </div>
+
+    <h2 class="section-title">Referenz: Distanzraten (pro KM)</h2>
+    <div class="table-wrapper">
+        <table id="rate-table">
+            <thead id="rate-head"></thead>
+            <tbody id="rate-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- Daten Konfiguration ---
+    const volThresholds = [9, 15, 21, 38, 41, 52];
+    const kmThresholds = [250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050];
+    
+    const truckFleet = [
+        { name: "Caddy", max: 1.5, payload: "400kg" },
+        { name: "Sprinter", max: 9, payload: "1100kg" },
+        { name: "LKW 3.5 to", max: 23, payload: "900kg" },
+        { name: "LKW 7.5 to", max: 35, payload: "2000kg" },
+        { name: "LKW 12 to", max: 45, payload: "5500kg" },
+        { name: "LKW 18 to", max: 48, payload: "9800kg" },
+        { name: "LKW 40 to", max: 90, payload: "25000kg" }
+    ];
+
+    const priceMatrix = [
+        [2.4, 2.88, 2.88, 4.32, 5.4, 5.94], [2.3, 2.76, 2.76, 4.14, 5.18, 5.69],
+        [2.2, 2.64, 2.64, 3.96, 4.95, 5.45], [2, 2.4, 2.4, 3.6, 4.5, 4.95],
+        [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46],
+        [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46],
+        [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46],
+        [1.7, 2.04, 2.04, 3.06, 3.83, 4.21], [1.7, 2.04, 2.04, 3.06, 3.83, 4.21],
+        [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.9, 2.28, 2.28, 3.42, 4.28, 4.7],
+        [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.95, 2.34, 2.34, 3.51, 4.39, 4.83],
+        [1.95, 2.34, 2.34, 3.51, 4.39, 4.83]
+    ];
+
+    // --- Seiten-Setup ---
+    window.onload = () => {
+        // Fahrzeugtabelle erstellen
+        const tb = document.getElementById('truck-body');
+        truckFleet.forEach(t => {
+            tb.innerHTML += `<tr><td>${t.name}</td><td>${t.max} m³</td><td>${t.payload}</td></tr>`;
+        });
+
+        // Matrix Kopf erstellen
+        let headHtml = '<tr><th>Distanz (KM)</th>';
+        volThresholds.forEach(v => headHtml += `<th class="highlight-col">bis ${v}m³</th>`);
+        document.getElementById('rate-head').innerHTML = headHtml + '</tr>';
+
+        // Matrix Body erstellen
+        const rb = document.getElementById('rate-body');
+        kmThresholds.forEach((km, i) => {
+            let row = `<tr><td><b>${km} KM</b></td>`;
+            priceMatrix[i].forEach(p => row += `<td style="text-align:center">${p.toFixed(2)}</td>`);
+            rb.innerHTML += row + '</tr>';
+        });
+    };
+
+    // --- Berechnungslogik ---
+    function calculateQuote() {
+        const vol = parseFloat(document.getElementById('volume').value);
+        const dist = parseFloat(document.getElementById('distance').value);
+        const vPrice = parseFloat(document.getElementById('volPrice').value) || 0;
+
+        if (!vol || !dist) {
+            alert("Bitte geben Sie Volumen und Distanz ein, um fortzufahren.");
+            return;
+        }
+
+        // 1. Fahrzeugwahl
+        const truck = truckFleet.find(t => vol <= t.max)?.name || "Support kontaktieren";
+
+        // 2. Matrix Suche (Distanzrate)
+        let colIdx = volThresholds.findIndex(v => vol <= v);
+        if (colIdx === -1) colIdx = volThresholds.length - 1;
+
+        let rowIdx = kmThresholds.findIndex(k => dist <= k);
+        if (rowIdx === -1) rowIdx = kmThresholds.length - 1;
+
+        const kmRate = priceMatrix[rowIdx][colIdx];
+
+        // 3. Mathematische Komponenten
+        const cargoSurcharge = vol * vPrice;
+        const transportCost = dist * kmRate;
+        const grandTotal = cargoSurcharge + transportCost;
+
+        // 4. UI aktualisieren
+        document.getElementById('res-truck').innerText = truck;
+        document.getElementById('res-cargo-cost').innerText = cargoSurcharge.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " (m³ × Preis)";
+        document.getElementById('res-dist-cost').innerText = transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " (km × Satz)";
+        document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2});
+
+        document.getElementById('result-display').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
