@@ -6,7 +6,7 @@
     <title>Umzugsangebot Rechner</title>
     <style>
         :root {
-            --primary: #27ae60; /* Professionelles Grün */
+            --primary: #27ae60; 
             --primary-dark: #219150;
             --secondary: #4b5563;
             --bg: #f3f4f6;
@@ -39,7 +39,6 @@
             margin-bottom: 5px;
         }
 
-        /* Calculator Layout */
         .calc-card {
             background: var(--card);
             padding: 30px;
@@ -96,7 +95,6 @@
             background-color: var(--primary-dark);
         }
 
-        /* Result Section */
         #result-display {
             margin-top: 30px;
             padding: 25px;
@@ -121,7 +119,6 @@
         .result-value { font-size: 1.3rem; font-weight: 800; color: #2d3748; }
         .total-value { font-size: 1.8rem; color: var(--primary); border-top: 2px solid var(--primary); padding-top: 5px; }
 
-        /* Tables */
         .section-title {
             color: var(--secondary);
             font-size: 1.3rem;
@@ -156,39 +153,39 @@
 <div class="main-container">
     <div class="header">
         <h1>Umzugsangebot Rechner</h1>
-        <p>Kombinierte Preisberechnung für Volumen & Distanz</p>
+        <p>Kalkulation nach Fahrzeugkapazität und Distanz</p>
     </div>
 
     <div class="calc-card">
         <div class="input-row">
             <div>
                 <label for="volume">Volumen (m³)</label>
-                <input type="number" id="volume" placeholder="z.B. 25" step="0.1">
+                <input type="number" id="volume" placeholder="z.B. 22" step="0.1">
             </div>
             <div>
                 <label for="distance">Distanz (KM)</label>
-                <input type="number" id="distance" placeholder="z.B. 630">
+                <input type="number" id="distance" placeholder="z.B. 370">
             </div>
             <div>
-                <label for="volPrice">Preis pro m³ (CHF/€)</label>
+                <label for="volPrice">Preis pro m³ (CHF)</label>
                 <input type="number" id="volPrice" placeholder="z.B. 75" step="0.01">
             </div>
         </div>
         
-        <button onclick="calculateQuote()">Endgültiges Angebot berechnen</button>
+        <button onclick="calculateQuote()">Angebot berechnen</button>
 
         <div id="result-display">
             <div class="result-grid">
                 <div class="result-item">
-                    <span class="result-label">Empfohlenes Fahrzeug</span>
+                    <span class="result-label">Gewähltes Fahrzeug</span>
                     <span id="res-truck" class="result-value">--</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">Frachtpreis</span>
+                    <span class="result-label">Volumenpreis (Fracht)</span>
                     <span id="res-cargo-cost" class="result-value">--</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">Transportpreis</span>
+                    <span class="result-label">Transportpreis (KM-Satz)</span>
                     <span id="res-dist-cost" class="result-value">--</span>
                 </div>
                 <div class="result-item">
@@ -207,7 +204,7 @@
         </table>
     </div>
 
-    <h2 class="section-title">Referenz: Distanzraten (pro KM)</h2>
+    <h2 class="section-title">Referenz: Preismatrix</h2>
     <div class="table-wrapper">
         <table id="rate-table">
             <thead id="rate-head"></thead>
@@ -217,7 +214,7 @@
 </div>
 
 <script>
-    // --- Daten Konfiguration ---
+    // --- Daten ---
     const volThresholds = [9, 15, 21, 38, 41, 52];
     const kmThresholds = [250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050];
     
@@ -243,20 +240,16 @@
         [1.95, 2.34, 2.34, 3.51, 4.39, 4.83]
     ];
 
-    // --- Seiten-Setup ---
     window.onload = () => {
-        // Fahrzeugtabelle erstellen
         const tb = document.getElementById('truck-body');
         truckFleet.forEach(t => {
-            tb.innerHTML += `<tr><td>${t.name}</td><td>${t.max} m³</td><td>${t.payload}</td></tr>`;
+            tb.innerHTML += `<tr><td>${t.name}</td><td>bis ${t.max} m³</td><td>${t.payload}</td></tr>`;
         });
 
-        // Matrix Kopf erstellen
-        let headHtml = '<tr><th>Distanz (KM)</th>';
-        volThresholds.forEach(v => headHtml += `<th class="highlight-col">bis ${v}m³</th>`);
+        let headHtml = '<tr><th>KM</th>';
+        volThresholds.forEach(v => headHtml += `<th class="highlight-col">${v} m³</th>`);
         document.getElementById('rate-head').innerHTML = headHtml + '</tr>';
 
-        // Matrix Body erstellen
         const rb = document.getElementById('rate-body');
         kmThresholds.forEach((km, i) => {
             let row = `<tr><td><b>${km} KM</b></td>`;
@@ -265,39 +258,47 @@
         });
     };
 
-    // --- Berechnungslogik ---
     function calculateQuote() {
         const vol = parseFloat(document.getElementById('volume').value);
         const dist = parseFloat(document.getElementById('distance').value);
         const vPrice = parseFloat(document.getElementById('volPrice').value) || 0;
 
         if (!vol || !dist) {
-            alert("Bitte geben Sie Volumen und Distanz ein, um fortzufahren.");
+            alert("Bitte Volumen und Distanz eingeben.");
             return;
         }
 
-        // 1. Fahrzeugwahl
-        const truck = truckFleet.find(t => vol <= t.max)?.name || "Support kontaktieren";
+        // --- 1. LKW Auswahl (AUFRUNDEN: Sobald ein m³ mehr da ist, nächster LKW) ---
+        const selectedTruckObj = truckFleet.find(t => vol <= t.max);
+        const truck = selectedTruckObj ? selectedTruckObj.name : "Spezialanfrage";
 
-        // 2. Matrix Suche (Distanzrate)
+        // --- 2. Volumen-Kategorie Preis (AUFRUNDEN: Sobald ein m³ über der Schwelle, nächste Spalte) ---
         let colIdx = volThresholds.findIndex(v => vol <= v);
         if (colIdx === -1) colIdx = volThresholds.length - 1;
 
-        let rowIdx = kmThresholds.findIndex(k => dist <= k);
-        if (rowIdx === -1) rowIdx = kmThresholds.length - 1;
+        // --- 3. Distanz-Kategorie Preis (ABRUNDEN: Bleibt in der Zeile bis nächste Schwelle erreicht ist) ---
+        // Beispiel: 370 km -> 370 >= 350 (Ja), 370 >= 400 (Nein) -> Index für 350 KM
+        let rowIdx = 0;
+        for (let i = 0; i < kmThresholds.length; i++) {
+            if (dist >= kmThresholds[i]) {
+                rowIdx = i;
+            }
+        }
+        // Sonderfall: Wenn Distanz unter 250 ist, nimm trotzdem die erste Zeile (250)
+        if (dist < kmThresholds[0]) rowIdx = 0;
 
         const kmRate = priceMatrix[rowIdx][colIdx];
 
-        // 3. Mathematische Komponenten
-        const cargoSurcharge = vol * vPrice;
+        // --- 4. Berechnung ---
+        const cargoCost = vol * vPrice;
         const transportCost = dist * kmRate;
-        const grandTotal = cargoSurcharge + transportCost;
+        const grandTotal = cargoCost + transportCost;
 
-        // 4. UI aktualisieren
+        // --- 5. UI ---
         document.getElementById('res-truck').innerText = truck;
-        document.getElementById('res-cargo-cost').innerText = cargoSurcharge.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " (m³ × Preis)";
-        document.getElementById('res-dist-cost').innerText = transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " (km × Satz)";
-        document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2});
+        document.getElementById('res-cargo-cost').innerText = cargoCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF";
+        document.getElementById('res-dist-cost').innerText = transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " (Satz: " + kmRate.toFixed(2) + " / Zeile: " + kmThresholds[rowIdx] + " KM)";
+        document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF";
 
         document.getElementById('result-display').style.display = 'block';
     }
