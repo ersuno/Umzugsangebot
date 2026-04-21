@@ -13,6 +13,7 @@
             --card: #ffffff;
             --text: #1f2937;
             --border: #d1d5db;
+            --disabled: #e5e7eb;
         }
 
         body {
@@ -48,6 +49,62 @@
             margin-bottom: 40px;
         }
 
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
         .input-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -63,19 +120,26 @@
             color: var(--secondary);
         }
 
-        input {
+        input[type="number"] {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid var(--border);
             border-radius: 8px;
             font-size: 1rem;
             box-sizing: border-box;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
-        input:focus {
+        input[type="number"]:focus {
             outline: none;
             border-color: var(--primary);
+        }
+
+        input[type="number"]:disabled {
+            background-color: var(--disabled);
+            border-color: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
         }
 
         button {
@@ -163,10 +227,18 @@
 <div class="main-container">
     <div class="header">
         <h1>Umzugsangebot Rechner</h1>
-        <p>Preiskalkulation basierend auf Fahrzeugkapazität und Distanzschwellen</p>
+        <p>Preiskalkulation basierend auf Fahrzeugkapazität</p>
     </div>
 
     <div class="calc-card">
+        <div class="switch-container">
+            <label class="switch">
+                <input type="checkbox" id="transportOnly" onchange="toggleTransportOnly()">
+                <span class="slider"></span>
+            </label>
+            <span style="font-weight: bold; font-size: 0.9rem; color: var(--secondary);">Transport only (Kein m³ Preis)</span>
+        </div>
+
         <div class="input-row">
             <div>
                 <label for="volume">Volumen (m³)</label>
@@ -177,7 +249,11 @@
                 <input type="number" id="distance" placeholder="z.B. 370">
             </div>
             <div>
-                <label for="volPrice">Preis pro m³ (CHF)</label>
+                <label for="discount">Rabatt (%)</label>
+                <input type="number" id="discount" placeholder="z.B. 5" step="0.1">
+            </div>
+            <div>
+                <label for="volPrice" id="volPriceLabel">Preis pro m³ (CHF) *</label>
                 <input type="number" id="volPrice" placeholder="z.B. 75" step="0.01">
             </div>
         </div>
@@ -190,13 +266,17 @@
                     <span class="result-label">Empfohlenes Fahrzeug</span>
                     <span id="res-truck" class="result-value">--</span>
                 </div>
-                <div class="result-item">
+                <div class="result-item" id="res-cargo-row">
                     <span class="result-label">Frachtpreis (Volumen)</span>
                     <span id="res-cargo-cost" class="result-value">--</span>
                 </div>
                 <div class="result-item">
                     <span class="result-label">Transportpreis (KM-Satz)</span>
                     <span id="res-dist-cost" class="result-value">--</span>
+                </div>
+                <div class="result-item" id="res-discount-row" style="display: none; color: #e53e3e;">
+                    <span class="result-label">Rabatt Abzug</span>
+                    <span id="res-discount-amount" class="result-value">--</span>
                 </div>
                 <div class="result-item total-row">
                     <span class="result-label">Gesamtbetrag</span>
@@ -267,13 +347,40 @@
         });
     };
 
+    // Funktion zum Umschalten des Status von Preis pro m³
+    function toggleTransportOnly() {
+        const isTransportOnly = document.getElementById('transportOnly').checked;
+        const volPriceInput = document.getElementById('volPrice');
+        const volPriceLabel = document.getElementById('volPriceLabel');
+
+        if (isTransportOnly) {
+            volPriceInput.value = ""; // Wert löschen
+            volPriceInput.disabled = true;
+            volPriceLabel.innerText = "Preis pro m³ (Deaktiviert)";
+            volPriceLabel.style.color = "#9ca3af";
+        } else {
+            volPriceInput.disabled = false;
+            volPriceLabel.innerText = "Preis pro m³ (CHF) *";
+            volPriceLabel.style.color = "var(--secondary)";
+        }
+    }
+
     function calculateQuote() {
         const vol = parseFloat(document.getElementById('volume').value);
         const dist = parseFloat(document.getElementById('distance').value);
-        const vPrice = parseFloat(document.getElementById('volPrice').value) || 0;
+        const vPrice = parseFloat(document.getElementById('volPrice').value);
+        const discountPercent = parseFloat(document.getElementById('discount').value) || 0;
+        const isTransportOnly = document.getElementById('transportOnly').checked;
 
+        // Validierung
         if (!vol || !dist) {
             alert("Bitte Volumen und Distanz eingeben.");
+            return;
+        }
+
+        // Pflichtfeld-Check für Preis pro m³, wenn NICHT Transport only
+        if (!isTransportOnly && isNaN(vPrice)) {
+            alert("Bitte geben Sie einen Preis pro m³ ein (Pflichtfeld bei Standard-Angeboten).");
             return;
         }
 
@@ -297,20 +404,39 @@
         const kmRate = priceMatrix[rowIdx][colIdx];
 
         // 4. Berechnung
-        const cargoCost = vol * vPrice;
+        const cargoCost = isTransportOnly ? 0 : (vol * vPrice);
         const transportCost = dist * kmRate;
-        const grandTotal = cargoCost + transportCost;
+        const subtotal = cargoCost + transportCost;
+        
+        const discountAmount = subtotal * (discountPercent / 100);
+        const grandTotal = subtotal - discountAmount;
 
         // 5. UI Aktualisierung
         document.getElementById('res-truck').innerText = truck;
         
-        document.getElementById('res-cargo-cost').innerHTML = 
-            cargoCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " +
-            `<span class="calculation-detail">(${vol.toLocaleString('de-DE')} m³ × ${vPrice.toLocaleString('de-DE', {minimumFractionDigits: 2})} Preis)</span>`;
+        const cargoRow = document.getElementById('res-cargo-row');
+        if (isTransportOnly) {
+            cargoRow.style.display = 'none';
+        } else {
+            cargoRow.style.display = 'flex';
+            document.getElementById('res-cargo-cost').innerHTML = 
+                cargoCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " +
+                `<span class="calculation-detail">(${vol.toLocaleString('de-DE')} m³ × ${vPrice.toLocaleString('de-DE', {minimumFractionDigits: 2})} Preis)</span>`;
+        }
             
         document.getElementById('res-dist-cost').innerHTML = 
             transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " +
             `<span class="calculation-detail">(${dist.toLocaleString('de-DE')} km × ${kmRate.toFixed(2)} Satz)</span>`;
+
+        const discountRow = document.getElementById('res-discount-row');
+        if (discountPercent > 0) {
+            discountRow.style.display = 'flex';
+            document.getElementById('res-discount-amount').innerHTML = 
+                "-" + discountAmount.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " +
+                `<span class="calculation-detail">(${discountPercent}% Rabatt auf ${subtotal.toLocaleString('de-DE', {minimumFractionDigits: 2})} CHF)</span>`;
+        } else {
+            discountRow.style.display = 'none';
+        }
             
         document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF";
 
