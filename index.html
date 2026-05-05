@@ -104,19 +104,6 @@
         }
         #termin-page .reset-header-btn:hover { background: rgba(255, 255, 255, 0.25); opacity: 1; transform: none; box-shadow: none; }
 
-        /* Style für den Reset-Button im Rechner */
-        #rechner-page .reset-rechner-btn {
-            width: auto;
-            padding: 6px 14px;
-            margin-top: 10px;
-            background: #fff;
-            color: var(--secondary);
-            border: 1px solid var(--border);
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        #rechner-page .reset-rechner-btn:hover { background: #f9fafb; border-color: var(--secondary); transform: none; box-shadow: none; }
-
         /* --- Scoped Styles for Rechner (Rechner.html) --- */
         body.mode-rechner { background-color: #f3f4f6; color: #1f2937; }
         #rechner-page {
@@ -134,10 +121,7 @@
             padding: 20px;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        #rechner-page.active {
-            display: block !important;
-        }
-        
+        #rechner-page.active { display: block !important; }
         #rechner-page .main-container { max-width: 1000px; margin: 0 auto; }
         #rechner-page .header { text-align: center; margin-bottom: 30px; }
         #rechner-page .header h1 { color: var(--primary); font-size: 2.2rem; margin-bottom: 5px; }
@@ -180,13 +164,13 @@
 </head>
 <body class="mode-termin">
 
-    <!-- Main Switcher Button at the Top -->
+    <!-- App Navigation -->
     <nav id="app-nav">
         <button id="nav-btn-termin" class="nav-btn active" onclick="showPage('termin')">Umzugsliste</button>
         <button id="nav-btn-rechner" class="nav-btn" onclick="showPage('rechner')">Rechner</button>
     </nav>
 
-    <!-- SECTION: UMZUNGSLISTE (Termin.html) -->
+    <!-- PAGE: UMZUNGSLISTE -->
     <div id="termin-page" class="page-container active">
         <div class="container">
             <div class="brand-header">
@@ -213,133 +197,23 @@
                 <div class="split-container">
                     <div class="column">
                         <div class="column-header">Auszug</div>
-                        <div class="form-group">
-                            <label>Objekttyp</label>
-                            <div class="select-wrapper">
-                                <select id="az_objekt">
-                                    <option value="Wohnung" selected>Wohnung</option>
-                                    <option value="Haus">Haus</option>
-                                    <option value="Lager">Lager</option>
-                                    <option value="Büro">Büro</option>
-                                    <option value="Garage">Garage</option>
-                                    <option value="Zweifamilienhaus">Zweifamilienhaus</option>
-                                    <option value="Reihenhaus">Reihenhaus</option>
-                                    <option value="WG-Zimmer">WG-Zimmer</option>
-                                    <option value="Maisonette">Maisonette</option>
-                                    <option value="Sonstiges">Sonstiges</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Stockwerk</label>
-                            <div class="select-wrapper">
-                                <select id="az_stockwerk">
-                                    <option value="" disabled selected>Bitte wählen</option>
-                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);</script>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Trageweg</label>
-                            <div class="select-wrapper">
-                                <select id="az_trageweg">
-                                    <option value="0-10 m">0-10 m</option>
-                                    <option value="10-20 m">10-20 m</option>
-                                    <option value="20-30 m">20-30 m</option>
-                                    <option value="30-40 m">30-40 m</option>
-                                    <option value="40-50 m">40-50 m</option>
-                                    <option value="50-60 m">50-60 m</option>
-                                    <option value="60-70 m">60-70 m</option>
-                                    <option value="70-80 m">70-80 m</option>
-                                    <option value="80-90 m">80-90 m</option>
-                                    <option value="90-100 m">90-100 m</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Aufzug (Vorhanden? | Personen)</label>
-                            <div class="multi-input-row">
-                                <div class="select-wrapper"><select id="az_aufzug_yn"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
-                                <div class="select-wrapper"><select id="az_aufzug_cap"><option value="" disabled selected>0-10</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Halteverbotszone</label>
-                            <div class="select-wrapper"><select id="az_hvz"><option value="Nein">Nein</option><option value="Ja">Ja</option><option value="Durch den Kunden">Durch den Kunden</option></select></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Aussenlift</label>
-                            <div class="select-wrapper"><select id="az_aussenlift"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Adresse</label>
-                            <textarea id="az_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea>
-                        </div>
+                        <div class="form-group"><label>Objekttyp</label><div class="select-wrapper"><select id="az_objekt"><option value="Wohnung" selected>Wohnung</option><option value="Haus">Haus</option><option value="Lager">Lager</option><option value="Büro">Büro</option><option value="Garage">Garage</option><option value="Zweifamilienhaus">Zweifamilienhaus</option><option value="Reihenhaus">Reihenhaus</option><option value="WG-Zimmer">WG-Zimmer</option><option value="Maisonette">Maisonette</option><option value="Sonstiges">Sonstiges</option></select></div></div>
+                        <div class="form-group"><label>Stockwerk</label><div class="select-wrapper"><select id="az_stockwerk"><option value="" disabled selected>Bitte wählen</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);</script></select></div></div>
+                        <div class="form-group"><label>Trageweg</label><div class="select-wrapper"><select id="az_trageweg"><option value="0-10 m">0-10 m</option><option value="10-20 m">10-20 m</option><option value="20-30 m">20-30 m</option><option value="30-40 m">30-40 m</option><option value="40-50 m">40-50 m</option><option value="50-60 m">50-60 m</option><option value="60-70 m">60-70 m</option><option value="70-80 m">70-80 m</option><option value="80-90 m">80-90 m</option><option value="90-100 m">90-100 m</option></select></div></div>
+                        <div class="form-group"><label>Aufzug (Vorhanden? | Personen)</label><div class="multi-input-row"><div class="select-wrapper"><select id="az_aufzug_yn"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div><div class="select-wrapper"><select id="az_aufzug_cap"><option value="" disabled selected>0-10</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div></div></div>
+                        <div class="form-group"><label>Halteverbotszone</label><div class="select-wrapper"><select id="az_hvz"><option value="Nein">Nein</option><option value="Ja">Ja</option><option value="Durch den Kunden">Durch den Kunden</option></select></div></div>
+                        <div class="form-group"><label>Aussenlift</label><div class="select-wrapper"><select id="az_aussenlift"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div></div>
+                        <div class="form-group"><label>Adresse</label><textarea id="az_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea></div>
                     </div>
                     <div class="column">
                         <div class="column-header">Einzug</div>
-                        <div class="form-group">
-                            <label>Objekttyp</label>
-                            <div class="select-wrapper">
-                                <select id="ez_objekt">
-                                    <option value="Wohnung" selected>Wohnung</option>
-                                    <option value="Haus">Haus</option>
-                                    <option value="Lager">Lager</option>
-                                    <option value="Büro">Büro</option>
-                                    <option value="Garage">Garage</option>
-                                    <option value="Zweifamilienhaus">Zweifamilienhaus</option>
-                                    <option value="Reihenhaus">Reihenhaus</option>
-                                    <option value="WG-Zimmer">WG-Zimmer</option>
-                                    <option value="Maisonette">Maisonette</option>
-                                    <option value="Sonstiges">Sonstiges</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Stockwerk</label>
-                            <div class="select-wrapper">
-                                <select id="ez_stockwerk">
-                                    <option value="" disabled selected>Bitte wählen</option>
-                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);</script>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Trageweg</label>
-                            <div class="select-wrapper">
-                                <select id="ez_trageweg">
-                                    <option value="0-10 m">0-10 m</option>
-                                    <option value="10-20 m">10-20 m</option>
-                                    <option value="20-30 m">20-30 m</option>
-                                    <option value="30-40 m">30-40 m</option>
-                                    <option value="40-50 m">40-50 m</option>
-                                    <option value="50-60 m">50-60 m</option>
-                                    <option value="60-70 m">60-70 m</option>
-                                    <option value="70-80 m">70-80 m</option>
-                                    <option value="80-90 m">80-90 m</option>
-                                    <option value="90-100 m">90-100 m</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Aufzug (Vorhanden? | Personen)</label>
-                            <div class="multi-input-row">
-                                <div class="select-wrapper"><select id="ez_aufzug_yn"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
-                                <div class="select-wrapper"><select id="ez_aufzug_cap"><option value="" disabled selected>0-10</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Halteverbotszone</label>
-                            <div class="select-wrapper"><select id="ez_hvz"><option value="Nein">Nein</option><option value="Ja">Ja</option><option value="Durch den Kunden">Durch den Kunden</option></select></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Aussenlift</label>
-                            <div class="select-wrapper"><select id="ez_aussenlift"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Adresse</label>
-                            <textarea id="ez_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea>
-                        </div>
+                        <div class="form-group"><label>Objekttyp</label><div class="select-wrapper"><select id="ez_objekt"><option value="Wohnung" selected>Wohnung</option><option value="Haus">Haus</option><option value="Lager">Lager</option><option value="Büro">Büro</option><option value="Garage">Garage</option><option value="Zweifamilienhaus">Zweifamilienhaus</option><option value="Reihenhaus">Reihenhaus</option><option value="WG-Zimmer">WG-Zimmer</option><option value="Maisonette">Maisonette</option><option value="Sonstiges">Sonstiges</option></select></div></div>
+                        <div class="form-group"><label>Stockwerk</label><div class="select-wrapper"><select id="ez_stockwerk"><option value="" disabled selected>Bitte wählen</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);</script></select></div></div>
+                        <div class="form-group"><label>Trageweg</label><div class="select-wrapper"><select id="ez_trageweg"><option value="0-10 m">0-10 m</option><option value="10-20 m">10-20 m</option><option value="20-30 m">20-30 m</option><option value="30-40 m">30-40 m</option><option value="40-50 m">40-50 m</option><option value="50-60 m">50-60 m</option><option value="60-70 m">60-70 m</option><option value="70-80 m">70-80 m</option><option value="80-90 m">80-90 m</option><option value="90-100 m">90-100 m</option></select></div></div>
+                        <div class="form-group"><label>Aufzug (Vorhanden? | Personen)</label><div class="multi-input-row"><div class="select-wrapper"><select id="ez_aufzug_yn"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div><div class="select-wrapper"><select id="ez_aufzug_cap"><option value="" disabled selected>0-10</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div></div></div>
+                        <div class="form-group"><label>Halteverbotszone</label><div class="select-wrapper"><select id="ez_hvz"><option value="Nein">Nein</option><option value="Ja">Ja</option><option value="Durch den Kunden">Durch den Kunden</option></select></div></div>
+                        <div class="form-group"><label>Aussenlift</label><div class="select-wrapper"><select id="ez_aussenlift"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div></div>
+                        <div class="form-group"><label>Adresse</label><textarea id="ez_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea></div>
                     </div>
                 </div>
                 <div class="form-group"><label for="inventar">Inventar</label><textarea id="inventar" placeholder="Liste der Möbelstücke..."></textarea></div>
@@ -347,18 +221,18 @@
                 <div class="form-group"><label for="internalNote">Interne Notiz</label><textarea id="internalNote" placeholder="Interne Bemerkungen, Preise, Team-Infos..."></textarea></div>
                 <div class="form-group"><label for="orgProposal">Organisationsvorschlag</label><textarea id="orgProposal" placeholder="Vorschlag zur Organisation des Umzugs..."></textarea></div>
                 <div class="form-group"><label for="serviceInfo">Service</label><textarea id="serviceInfo" placeholder="Zusatzleistungen, Verpackungsservice etc..."></textarea></div>
-                <button type="submit" id="downloadBtn">Download .txt <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V3M12 15L8 11M12 15L16 11M2 17L2.62 19.48C2.84 20.36 3.06 20.8 3.52 21.15C3.98 21.5 4.54 21.5 5.66 21.5H18.34C19.46 21.5 20.02 21.5 20.48 21.15C20.94 20.8 21.16 20.36 21.38 19.48L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button type="submit" id="downloadBtn">Liste per Email senden</button>
             </form>
         </div>
     </div>
 
-    <!-- SECTION: RECHNER (Rechner.html) -->
+    <!-- PAGE: RECHNER -->
     <div id="rechner-page" class="page-container">
         <div class="main-container">
             <div class="header">
                 <h1>Umzugsangebot Rechner</h1>
                 <p>Preiskalkulation basierend auf Fahrzeugkapazität</p>
-                <button type="button" class="reset-rechner-btn" onclick="resetRechnerForm()">Rechner zurücksetzen / Reset</button>
+                <button type="button" class="reset-rechner-btn" onclick="resetRechnerForm()">Rechner zurücksetzen</button>
             </div>
             <div class="calc-card">
                 <div class="switch-container">
@@ -384,8 +258,6 @@
             </div>
             <h2 class="section-title">Referenz: Fahrzeugflotte</h2>
             <div class="table-wrapper"><table><thead><tr><th>Fahrzeug</th><th>Max. Kapazität</th><th>Nutzlast</th></tr></thead><tbody id="truck-body"></tbody></table></div>
-            <h2 class="section-title">Referenz: Preismatrix</h2>
-            <div class="table-wrapper"><table><thead id="rate-head"></thead><tbody id="rate-body"></tbody></table></div>
         </div>
     </div>
 
@@ -394,63 +266,91 @@
         function showPage(pageId) {
             document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById(pageId + '-page').classList.add('active');
             document.getElementById('nav-btn-' + pageId).classList.add('active');
             document.body.className = 'mode-' + pageId;
         }
 
-        /* --- Umzugsliste (Termin.html) Logic --- */
+        /* --- Umzugsliste Form Logic --- */
         function resetTerminForm() {
-            if (confirm("Möchten Sie alle Felder der Umzugsliste wirklich löschen und zurücksetzen?")) {
+            if (confirm("Möchten Sie alle Felder wirklich löschen?")) {
                 document.getElementById('moveForm').reset();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function resetRechnerForm() {
-            if (confirm("Möchten Sie alle Eingaben im Rechner wirklich löschen?")) {
-                document.getElementById('volume').value = '';
-                document.getElementById('distance').value = '';
-                document.getElementById('discount').value = '';
-                document.getElementById('volPrice').value = '';
-                document.getElementById('transportOnly').checked = false;
-                toggleTransportOnly();
-                document.getElementById('result-display').style.display = 'none';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
         document.getElementById('moveForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : '-'; };
-            const customer = document.getElementById('customerName').value;
-            const reason = document.getElementById('moveReason').value;
-            const inventar = document.getElementById('inventar').value;
-            const desc = document.getElementById('description').value;
-            const internal = document.getElementById('internalNote').value;
-            const orgProposal = document.getElementById('orgProposal').value;
-            const serviceInfo = document.getElementById('serviceInfo').value;
-            const az_obj = getVal('az_objekt'), az_st = getVal('az_stockwerk'), az_tw = getVal('az_trageweg'), az_auf_yn = getVal('az_aufzug_yn'), az_auf_cap = getVal('az_aufzug_cap'), az_hvz = getVal('az_hvz'), az_al = getVal('az_aussenlift'), az_adr = getVal('az_adresse');
-            const ez_obj = getVal('ez_objekt'), ez_st = getVal('ez_stockwerk'), ez_tw = getVal('ez_trageweg'), ez_auf_yn = getVal('ez_aufzug_yn'), ez_auf_cap = getVal('ez_aufzug_cap'), ez_hvz = getVal('ez_hvz'), ez_al = getVal('ez_aussenlift'), ez_adr = getVal('ez_adresse');
-            const textContent = `KUNDE: ${customer}\nART:   ${reason}\n==========================================\nAUSZUG (Start)\n==========================================\nObjekttyp:        ${az_obj}\nAdresse:          ${az_adr}\nStockwerk:        ${az_st}. Etage\nTrageweg:         ${az_tw}\nAufzug:           ${az_auf_yn} (Personen/Kapazität: ${az_auf_cap})\nHalteverbotszone: ${az_hvz}\nAussenlift:       ${az_al}\n\n==========================================\nEINZUG (Ziel)\n==========================================\nObjekttyp:        ${ez_obj}\nAdresse:          ${ez_adr}\nStockwerk:        ${ez_st}. Etage\nTrageweg:         ${ez_tw}\nAufzug:           ${ez_auf_yn} (Personen/Kapazität: ${ez_auf_cap})\nHalteverbotszone: ${ez_hvz}\nAussenlift:       ${ez_al}\n\n==========================================\nINVENTAR\n==========================================\n${inventar}\n\n==========================================\nBESCHREIBUNG\n==========================================\n${desc}\n\n==========================================\nINTERNE NOTIZ\n==========================================\n${internal}\n\n==========================================\nORGANISATIONSVORSCHLAG\n==========================================\n${orgProposal}\n\n==========================================\nSERVICE\n==========================================\n${serviceInfo}\n`;
-            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-            const safeName = (customer.trim().replace(/[^a-z0-9äöüß]/gi, '_') || 'umzug') + '.txt';
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url; link.setAttribute('download', safeName); document.body.appendChild(link);
-            link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+
+            // DEINE GOOGLE APPS SCRIPT URL
+            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlRaiLCGGNIx2_ZqObgNzSVujLo_hlHl1fPZ5bZI2LKlQ_0bPqAkrb9Y2TbJE6ng-uUA/exec";
+
+            const getVal = (id) => { 
+                const el = document.getElementById(id); 
+                return (el && el.value.trim() !== "") ? el.value : "-"; 
+            };
+            
+            const formData = {
+                customerName: getVal('customerName'),
+                moveReason: getVal('moveReason'),
+                az_objekt: getVal('az_objekt'),
+                az_stockwerk: getVal('az_stockwerk'),
+                az_trageweg: getVal('az_trageweg'),
+                az_aufzug_yn: getVal('az_aufzug_yn'),
+                az_aufzug_cap: getVal('az_aufzug_cap'),
+                az_hvz: getVal('az_hvz'),
+                az_aussenlift: getVal('az_aussenlift'),
+                az_adresse: getVal('az_adresse'),
+                ez_objekt: getVal('ez_objekt'),
+                ez_stockwerk: getVal('ez_stockwerk'),
+                ez_trageweg: getVal('ez_trageweg'),
+                ez_aufzug_yn: getVal('ez_aufzug_yn'),
+                ez_aufzug_cap: getVal('ez_aufzug_cap'),
+                ez_hvz: getVal('ez_hvz'),
+                ez_aussenlift: getVal('ez_aussenlift'),
+                ez_adresse: getVal('ez_adresse'),
+                inventar: getVal('inventar'),
+                description: getVal('description'),
+                internalNote: getVal('internalNote'),
+                orgProposal: getVal('orgProposal'),
+                serviceInfo: getVal('serviceInfo')
+            };
+
+            const btn = document.getElementById('downloadBtn');
+            const originalContent = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Wird gesendet...";
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                alert("Erfolg! Die Liste wurde an Ihre Email gesendet.");
+                btn.disabled = false;
+                btn.innerText = originalContent;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Fehler beim Senden!");
+                btn.disabled = false;
+                btn.innerText = originalContent;
+            });
         });
 
-        /* --- Rechner (Rechner.html) Logic --- */
-        const volThresholds = [9, 15, 21, 38, 41, 52];
-        const kmThresholds = [250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050];
+        /* --- Rechner Logic --- */
         const truckFleet = [
             { name: "Caddy", max: 1.5, payload: "400kg" }, { name: "Sprinter", max: 9, payload: "1100kg" },
             { name: "LKW 3.5 to", max: 23, payload: "900kg" }, { name: "LKW 7.5 to", max: 35, payload: "2000kg" },
             { name: "LKW 12 to", max: 45, payload: "5500kg" }, { name: "LKW 18 to", max: 48, payload: "9800kg" },
             { name: "LKW 40 to", max: 90, payload: "25000kg" }
         ];
+
+        const volThresholds = [9, 15, 21, 38, 41, 52];
+        const kmThresholds = [250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050];
         const priceMatrix = [
             [2.4, 2.88, 2.88, 4.32, 5.4, 5.94], [2.3, 2.76, 2.76, 4.14, 5.18, 5.69], [2.2, 2.64, 2.64, 3.96, 4.95, 5.45], [2, 2.4, 2.4, 3.6, 4.5, 4.95],
             [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46],
@@ -462,34 +362,25 @@
         window.addEventListener('load', () => {
             const tb = document.getElementById('truck-body');
             if(tb) truckFleet.forEach(t => tb.innerHTML += `<tr><td>${t.name}</td><td>bis ${t.max} m³</td><td>${t.payload}</td></tr>`);
-            const rh = document.getElementById('rate-head');
-            if(rh) {
-                let headHtml = '<tr><th>KM</th>';
-                volThresholds.forEach(v => headHtml += `<th class="highlight-col">${v} m³</th>`);
-                rh.innerHTML = headHtml + '</tr>';
-            }
-            const rb = document.getElementById('rate-body');
-            if(rb) {
-                kmThresholds.forEach((km, i) => {
-                    let row = `<tr><td><b>${km} KM</b></td>`;
-                    priceMatrix[i].forEach(p => row += `<td style="text-align:center">${p.toFixed(2)}</td>`);
-                    rb.innerHTML += row + '</tr>';
-                });
-            }
         });
+
+        function resetRechnerForm() {
+            document.getElementById('volume').value = '';
+            document.getElementById('distance').value = '';
+            document.getElementById('discount').value = '';
+            document.getElementById('volPrice').value = '';
+            document.getElementById('result-display').style.display = 'none';
+        }
 
         function toggleTransportOnly() {
             const isTransportOnly = document.getElementById('transportOnly').checked;
             const volPriceInput = document.getElementById('volPrice');
-            const volPriceLabel = document.getElementById('volPriceLabel');
-            if (isTransportOnly) { volPriceInput.value = ""; volPriceInput.disabled = true; volPriceLabel.innerText = "Preis pro m³ (Deaktiviert)"; volPriceLabel.style.color = "#9ca3af"; } 
-            else { volPriceInput.disabled = false; volPriceLabel.innerText = "Preis pro m³ (CHF) *"; volPriceLabel.style.color = "var(--secondary)"; }
+            volPriceInput.disabled = isTransportOnly;
         }
 
         function calculateQuote() {
             const vol = parseFloat(document.getElementById('volume').value), dist = parseFloat(document.getElementById('distance').value), vPrice = parseFloat(document.getElementById('volPrice').value), discountPercent = parseFloat(document.getElementById('discount').value) || 0, isTransportOnly = document.getElementById('transportOnly').checked;
             if (!vol || !dist) { alert("Bitte Volumen und Distanz eingeben."); return; }
-            if (!isTransportOnly && isNaN(vPrice)) { alert("Bitte geben Sie einen Preis pro m³ ein."); return; }
             const selectedTruckObj = truckFleet.find(t => vol <= t.max);
             const truck = selectedTruckObj ? selectedTruckObj.name : "Spezialanfrage";
             let colIdx = volThresholds.findIndex(v => vol <= v);
@@ -499,14 +390,9 @@
             const kmRate = priceMatrix[rowIdx][colIdx];
             const cargoCost = isTransportOnly ? 0 : (vol * vPrice), transportCost = dist * kmRate, subtotal = cargoCost + transportCost, discountAmount = subtotal * (discountPercent / 100), grandTotal = subtotal - discountAmount;
             document.getElementById('res-truck').innerText = truck;
-            const cargoRow = document.getElementById('res-cargo-row');
-            if (isTransportOnly) { cargoRow.style.display = 'none'; } 
-            else { cargoRow.style.display = 'flex'; document.getElementById('res-cargo-cost').innerHTML = cargoCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${vol.toLocaleString('de-DE')} m³ × ${vPrice.toLocaleString('de-DE', {minimumFractionDigits: 2})} Preis)</span>`; }
-            document.getElementById('res-dist-cost').innerHTML = transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${dist.toLocaleString('de-DE')} km × ${kmRate.toFixed(2)} Satz)</span>`;
-            const discountRow = document.getElementById('res-discount-row');
-            if (discountPercent > 0) { discountRow.style.display = 'flex'; document.getElementById('res-discount-amount').innerHTML = "-" + discountAmount.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${discountPercent}% Rabatt auf ${subtotal.toLocaleString('de-DE', {minimumFractionDigits: 2})} CHF)</span>`; } 
-            else { discountRow.style.display = 'none'; }
-            document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF";
+            document.getElementById('res-cargo-cost').innerText = cargoCost.toFixed(2) + " CHF";
+            document.getElementById('res-dist-cost').innerText = transportCost.toFixed(2) + " CHF";
+            document.getElementById('res-total').innerText = grandTotal.toFixed(2) + " CHF";
             document.getElementById('result-display').style.display = 'block';
         }
     </script>
