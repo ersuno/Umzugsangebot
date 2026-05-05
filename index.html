@@ -258,6 +258,8 @@
             </div>
             <h2 class="section-title">Referenz: Fahrzeugflotte</h2>
             <div class="table-wrapper"><table><thead><tr><th>Fahrzeug</th><th>Max. Kapazität</th><th>Nutzlast</th></tr></thead><tbody id="truck-body"></tbody></table></div>
+            <h2 class="section-title">Referenz: Preismatrix</h2>
+            <div class="table-wrapper"><table><thead id="rate-head"></thead><tbody id="rate-body"></tbody></table></div>
         </div>
     </div>
 
@@ -362,25 +364,47 @@
         window.addEventListener('load', () => {
             const tb = document.getElementById('truck-body');
             if(tb) truckFleet.forEach(t => tb.innerHTML += `<tr><td>${t.name}</td><td>bis ${t.max} m³</td><td>${t.payload}</td></tr>`);
+            const rh = document.getElementById('rate-head');
+            if(rh) {
+                let headHtml = '<tr><th>KM</th>';
+                volThresholds.forEach(v => headHtml += `<th class="highlight-col">${v} m³</th>`);
+                rh.innerHTML = headHtml + '</tr>';
+            }
+            const rb = document.getElementById('rate-body');
+            if(rb) {
+                kmThresholds.forEach((km, i) => {
+                    let row = `<tr><td><b>${km} KM</b></td>`;
+                    priceMatrix[i].forEach(p => row += `<td style="text-align:center">${p.toFixed(2)}</td>`);
+                    rb.innerHTML += row + '</tr>';
+                });
+            }
         });
 
         function resetRechnerForm() {
-            document.getElementById('volume').value = '';
-            document.getElementById('distance').value = '';
-            document.getElementById('discount').value = '';
-            document.getElementById('volPrice').value = '';
-            document.getElementById('result-display').style.display = 'none';
+            if (confirm("Möchten Sie alle Eingaben im Rechner wirklich löschen?")) {
+                document.getElementById('volume').value = '';
+                document.getElementById('distance').value = '';
+                document.getElementById('discount').value = '';
+                document.getElementById('volPrice').value = '';
+                document.getElementById('transportOnly').checked = false;
+                toggleTransportOnly();
+                document.getElementById('result-display').style.display = 'none';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         function toggleTransportOnly() {
             const isTransportOnly = document.getElementById('transportOnly').checked;
             const volPriceInput = document.getElementById('volPrice');
-            volPriceInput.disabled = isTransportOnly;
+            const volPriceLabel = document.getElementById('volPriceLabel');
+            if (isTransportOnly) { volPriceInput.value = ""; volPriceInput.disabled = true; volPriceLabel.innerText = "Preis pro m³ (Deaktiviert)"; volPriceLabel.style.color = "#9ca3af"; } 
+            else { volPriceInput.disabled = false; volPriceLabel.innerText = "Preis pro m³ (CHF) *"; volPriceLabel.style.color = "var(--secondary)"; }
         }
 
         function calculateQuote() {
             const vol = parseFloat(document.getElementById('volume').value), dist = parseFloat(document.getElementById('distance').value), vPrice = parseFloat(document.getElementById('volPrice').value), discountPercent = parseFloat(document.getElementById('discount').value) || 0, isTransportOnly = document.getElementById('transportOnly').checked;
             if (!vol || !dist) { alert("Bitte Volumen und Distanz eingeben."); return; }
+            if (!isTransportOnly && isNaN(vPrice)) { alert("Bitte geben Sie einen Preis pro m³ ein."); return; }
             const selectedTruckObj = truckFleet.find(t => vol <= t.max);
             const truck = selectedTruckObj ? selectedTruckObj.name : "Spezialanfrage";
             let colIdx = volThresholds.findIndex(v => vol <= v);
@@ -390,9 +414,14 @@
             const kmRate = priceMatrix[rowIdx][colIdx];
             const cargoCost = isTransportOnly ? 0 : (vol * vPrice), transportCost = dist * kmRate, subtotal = cargoCost + transportCost, discountAmount = subtotal * (discountPercent / 100), grandTotal = subtotal - discountAmount;
             document.getElementById('res-truck').innerText = truck;
-            document.getElementById('res-cargo-cost').innerText = cargoCost.toFixed(2) + " CHF";
-            document.getElementById('res-dist-cost').innerText = transportCost.toFixed(2) + " CHF";
-            document.getElementById('res-total').innerText = grandTotal.toFixed(2) + " CHF";
+            const cargoRow = document.getElementById('res-cargo-row');
+            if (isTransportOnly) { cargoRow.style.display = 'none'; } 
+            else { cargoRow.style.display = 'flex'; document.getElementById('res-cargo-cost').innerHTML = cargoCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${vol.toLocaleString('de-DE')} m³ × ${vPrice.toLocaleString('de-DE', {minimumFractionDigits: 2})} Preis)</span>`; }
+            document.getElementById('res-dist-cost').innerHTML = transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${dist.toLocaleString('de-DE')} km × ${kmRate.toFixed(2)} Satz)</span>`;
+            const discountRow = document.getElementById('res-discount-row');
+            if (discountPercent > 0) { discountRow.style.display = 'flex'; document.getElementById('res-discount-amount').innerHTML = "-" + discountAmount.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${discountPercent}% Rabatt auf ${subtotal.toLocaleString('de-DE', {minimumFractionDigits: 2})} CHF)</span>`; } 
+            else { discountRow.style.display = 'none'; }
+            document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF";
             document.getElementById('result-display').style.display = 'block';
         }
     </script>
